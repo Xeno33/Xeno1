@@ -1,0 +1,67 @@
+using UnityEngine;
+using System.Collections;
+
+public class BasicRay : MonoBehaviour {
+
+	public GameObject victim; //this will be assigned to the first victim, which is in our scene
+	public GameObject vicBlueprint; //assign this to the prefab taken from our first victim
+	public Transform obj;
+
+	// Use this for initialization
+	void Start () {
+	
+	}
+	
+	// Update is called once per frame
+	void Update () {
+	
+		Ray myRay = Camera.main.ScreenPointToRay (Input.mousePosition);
+		Camera.main.transform.LookAt (myRay.direction * 5);
+		Debug.DrawRay (myRay.origin, myRay.direction * 1000, Color.red);
+
+		RaycastHit rayhit = new RaycastHit ();
+
+		if (Physics.Raycast (myRay, out rayhit, 1000f) && Input.GetMouseButton(0)) {
+			Debug.Log("you done hit something" + rayhit.transform);
+			Instantiate(obj, rayhit.point, Random.rotation);
+			if(rayhit.transform.tag == "janeDoe") {
+				Debug.Log ("poor jane doe:(");
+			}
+		}
+	}
+}
+
+////
+
+using UnityEngine;
+using System.Collections;
+
+public class Movement : MonoBehaviour {
+
+	public float movementSpeed = 5.0f;
+	public float mouseSensitivity = 5.0f;
+
+	// Use this for initialization
+	void Start () {
+	
+	}
+	
+	// Update is called once per frame
+	void Update () {
+
+		float rotLeftRight = Input.GetAxis ("Mouse X") * mouseSensitivity;
+		transform.Rotate (0, rotLeftRight, 0);
+
+		//Movement
+		float forwardSpeed = Input.GetAxis ("Vertical") * movementSpeed;
+		float sideSpeed = Input.GetAxis ("Horizontal") * movementSpeed;
+		Vector3 speed = new Vector3 (sideSpeed, 0, forwardSpeed);
+
+		speed = transform.rotation * speed;
+
+		CharacterController cc = GetComponent<CharacterController> ();
+
+			cc.SimpleMove (speed);
+	
+	}
+}
